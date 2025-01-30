@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 
 export async function GET(
   request: Request,
@@ -20,6 +21,7 @@ export async function GET(
     return NextResponse.json(recipe)
   } catch (error) {
     console.error('Error:', error)
+    throw new Error('Error fetching recipe')
     return new NextResponse('Internal Server Error', { status: 500 })
   }
 }

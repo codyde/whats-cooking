@@ -3,9 +3,26 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { supabaseIntegration } from '@supabase/sentry-js-integration'
 
 Sentry.init({
-  dsn: "https://5291a3985d98ab7b569e9456a9b88dc8@o4508130833793024.ingest.us.sentry.io/4508377574277120",
+  dsn: "https://a58ee14cb2f19d079c1b9701f8472386@o4508130833793024.ingest.us.sentry.io/4508635298988032",
+  attachStacktrace: true,
+  integrations: [
+    supabaseIntegration(SupabaseClient, Sentry, {
+      tracing: true,
+      breadcrumbs: true,
+      errors: true,
+    }),
+    Sentry.nativeNodeFetchIntegration({
+      breadcrumbs: true,
+      ignoreOutgoingRequests: (url) => {
+        return url.startsWith(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest`)
+      },
+    }),
+  ],
+
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,

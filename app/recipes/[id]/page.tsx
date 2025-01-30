@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { useSupabase } from '@/hooks/use-supabase'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { RecipeInstructions } from '@/components/recipes/recipe-instructions'
 
 export default function RecipePage() {
   const params = useParams()
@@ -142,7 +143,7 @@ export default function RecipePage() {
             <Card className="p-6">
               <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
               <ul className="list-disc pl-6 space-y-2">
-                {recipe.ingredients.map((ingredient, index) => (
+                {recipe.ingredients.map((ingredient: string, index: number) => (
                   <li key={index}>
                     <EditableField
                       value={ingredient}
@@ -159,23 +160,14 @@ export default function RecipePage() {
         </div>
 
         {/* Instructions - Full Width Below */}
-        <Card className="p-6 mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Instructions</h2>
-          <ol className="list-decimal pl-6 space-y-4">
-            {recipe.instructions.map((instruction, index) => (
-              <li key={index}>
-                <EditableField
-                  value={instruction}
-                  fieldName={`instructions[${index}]`}
-                  recipeId={recipe.id}
-                  type="textarea"
-                  onUpdate={fetchRecipe}
-                  editMode={editMode}
-                />
-              </li>
-            ))}
-          </ol>
-        </Card>
+        <div className="mt-8">
+          <RecipeInstructions
+            instructions={recipe.instructions}
+            recipeId={recipe.id}
+            onUpdate={fetchRecipe}
+            editMode={editMode}
+          />
+        </div>
       </div>
     </div>
   )

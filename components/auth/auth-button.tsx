@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import * as Sentry from '@sentry/nextjs'
 
 export function AuthButton() {
   const router = useRouter()
@@ -19,10 +20,19 @@ export function AuthButton() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check initial session
-    supabase.auth.getSession().then(() => {
-      setIsLoading(false)
-    })
+      // Check initial session
+  supabase.auth.getSession().then((response) => {
+    if (response.data.session) {
+      Sentry.setUser({
+        id: response.data.session.user.id,
+        email: response.data.session.user.email,
+        username: response.data.session.user.user_metadata?.username
+      });
+    } else {
+      Sentry.setUser(null); // Clear user context when not authenticated
+    }
+    setIsLoading(false);
+  });
   }, [supabase.auth])
 
   const handleSignIn = async () => {

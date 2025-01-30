@@ -3,17 +3,25 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { supabaseIntegration } from '@supabase/sentry-js-integration'
 
 Sentry.init({
-  dsn: "https://5291a3985d98ab7b569e9456a9b88dc8@o4508130833793024.ingest.us.sentry.io/4508377574277120",
+  dsn: "https://a58ee14cb2f19d079c1b9701f8472386@o4508130833793024.ingest.us.sentry.io/4508635298988032",
 
   // Add optional integrations for additional features
   integrations: [
-    Sentry.replayIntegration({
-      // NOTE: This will disable built-in masking. Only use this if your site has no sensitive data, or if you've already set up other options for masking or blocking relevant data, such as 'ignore', 'block', 'mask' and 'maskFn'.
-      maskAllText: false,
-      blockAllMedia: false,
-    })    
+    Sentry.replayIntegration(),
+    supabaseIntegration(SupabaseClient, Sentry, {
+      tracing: true,
+      breadcrumbs: true,
+      errors: true,
+    }),
+    Sentry.browserTracingIntegration({
+      shouldCreateSpanForRequest: (url) => {
+        return !url.startsWith(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest`)
+      },
+    }),
   ],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
@@ -22,11 +30,13 @@ Sentry.init({
   // Define how likely Replay events are sampled.
   // This sets the sample rate to be 10%. You may want this to be 100% while
   // in development and sample at a lower rate in production
-  replaysSessionSampleRate: 1.0, 
-  
+  replaysSessionSampleRate: 1.0,
+
   // Define how likely Replay events are sampled when an error occurs.
   replaysOnErrorSampleRate: 1.0,
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+  attachStacktrace: true,
+
 });
