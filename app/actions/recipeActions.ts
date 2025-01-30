@@ -15,6 +15,7 @@ export async function saveRecipeDraft(
     return await Sentry.withServerActionInstrumentation(
       "saveRecipeDraft",
       {
+        // @ts-ignore
         data: { userId, recipeId, ...data },
         headers: headers(),
         recordResponse: true,
@@ -74,6 +75,7 @@ export async function saveRecipeDraft(
     return await Sentry.withServerActionInstrumentation(
       "publishRecipe",
       {
+        // @ts-ignore
         data: { userId, recipeId, ...data },
         headers: headers(),
         recordResponse: true,
